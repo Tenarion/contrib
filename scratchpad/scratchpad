@@ -2,7 +2,6 @@
 
 # Nikhil Singh <nik.singh710@gmail.com>
 
-# Variables
 _action=send
 _listing=false
 _menu_cmd="rofi -dmenu -i -p scratchpad"
@@ -90,7 +89,7 @@ EOF
 }
 
 takes() {
-  hyprctl dispatch workspace "special:$default_scratchpad_name"
+  hyprctl dispatch "hl.dsp.focus({ workspace = 'special:$default_scratchpad_name' })"
   exit 0
 }
 
@@ -127,16 +126,16 @@ getBack() {
   }
   [ -z "$_selected_client" ] && _selected_client="$(echo "${_clients_on_spad[*]}" | eval "${_menu_cmd[*]}")"
   _address="$(echo "$_selected_client" | awk '{print $NF}')"
-  hyprctl dispatch movetoworkspace "$_current_workspace,address:$_address"
-  hyprctl dispatch focuswindow "address:$_address"
+  hyprctl dispatch "hl.dsp.window.move({ workspace = '$_current_workspace', window = 'address:$_address' })"
+  hyprctl dispatch "hl.dsp.focus({ window = 'address:$_address' })"
   [ "$(hyprctl activewindow -j | jq '.floating')" = true ] && {
-    hyprctl dispatch bringactivetotop none
+    hyprctl dispatch "hl.dsp.window.bring_to_top()"
   }
   IFS="$_ifs"
 }
 
 send() {
-  hyprctl dispatch movetoworkspacesilent "special:$default_scratchpad_name"
+  hyprctl dispatch "hl.dsp.window.move({ workspace = 'special:$default_scratchpad_name', follow = false })"
 }
 
 getArgs() {
